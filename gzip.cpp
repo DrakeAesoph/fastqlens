@@ -24,7 +24,17 @@ bool my_gzip::open(char * f)
         good = false;
         return false;
     }
-    inbuf.push(boost::iostreams::gzip_decompressor());
+    //check if file is actually gzip by looking at funny number
+    unsigned char b1, b2;
+    file_stream >> b1;
+    file_stream >> b2;
+    if(b1 == 0x1f && b2 == 0x8b)
+    {
+        //file is (probably) gzip
+        inbuf.push(boost::iostreams::gzip_decompressor());
+    }
+    //set stream back to beginning
+    file_stream.seekg(0);
     inbuf.push(file_stream);
     instream = new std::istream(&inbuf);
     good = true;
