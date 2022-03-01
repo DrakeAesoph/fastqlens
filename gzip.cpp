@@ -3,6 +3,7 @@
 //default constructor
 //assume nothing is good
 my_gzip::my_gzip(){
+    instream = nullptr;
     good = false;
 }
 
@@ -10,6 +11,7 @@ my_gzip::my_gzip(){
 //f: file to try to open
 my_gzip::my_gzip(char * f)
 {
+    instream = nullptr;
     good = false;
     open(f);
 }
@@ -44,8 +46,10 @@ bool my_gzip::open(char * f)
 //cleanup
 my_gzip::~my_gzip()
 {
-    file_stream.close();
-    delete instream;
+    if(file_stream.is_open())
+        file_stream.close();
+    if(instream != nullptr)
+        delete instream;
 }
 
 //fail and stuff

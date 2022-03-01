@@ -16,8 +16,18 @@ bool init(int argc, char** argv, my_gzip& f1, my_gzip& f2)
         return false;
     }
 
-    f1.open(argv[1]);
-    f2.open(argv[2]);
+    if(!f1.open(argv[1]))
+    {
+        cerr << "Could not open file: " << argv[1] << endl;
+        return false;
+    }
+    if(!f2.open(argv[2]))
+    {
+        cerr << "Could not open file: " << argv[2] << endl;
+        return false;
+    }
+
+
     return true;
 }
 
@@ -200,8 +210,14 @@ int main(int argc, char** argv) {
         while(!r1.eof() && !r2.eof())
         {
             r1.readline(bufa, MAX_BUF); r2.readline(bufb, MAX_BUF);
+            //the above lines should match
+            if(r1.eof() || r2.eof()) break;
+            if(strcmp(bufa, bufb) != 0)
+            {
+                cerr << "Reads are not paired?" << endl;
+                break;
+            }
             r1.readline(bufa, MAX_BUF); r2.readline(bufb, MAX_BUF);
-            if(r1.eof()) break;
             inverse(bufb);
             //cout << "R1: " << bufa << endl << "R2: " << bufb << endl;
             cout << find_length_kmp(bufa, bufb) << endl;
