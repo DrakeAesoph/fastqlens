@@ -100,10 +100,6 @@ int find_length_kmp(char* r1, char* r2)
         cerr << "Somethin funky's goin down" << endl;
     }
 
-    //naive approach: check if match
-    // if mismatch found:
-    //  shift R1 over (increase starting position of R2)
-    // check till end of string (R2)
     bool found = false;
 
     while(i < n - 15)
