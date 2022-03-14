@@ -243,6 +243,10 @@ int main(int argc, char** argv) {
             inverse(bufb);
             //cout << "R1: " << bufa << endl << "R2: " << bufb << endl;
             int l = find_length_kmp(bufa, bufb);
+            //turns out sometimes it's the other read we need to search
+            int l2 = find_length_kmp(bufb, bufa);
+            l = l2 > l ? l2 : l;
+
             if(l > 0)
                 cout << l << endl;
             //Line 3 begins with a '+' character and is optionally followed by the same sequence identifier (and any description) again.
