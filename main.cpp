@@ -242,7 +242,9 @@ int main(int argc, char** argv) {
             r1.readline(bufa, MAX_BUF); r2.readline(bufb, MAX_BUF);
             inverse(bufb);
             //cout << "R1: " << bufa << endl << "R2: " << bufb << endl;
-            cout << find_length_kmp(bufa, bufb) << endl;
+            int l = find_length_kmp(bufa, bufb);
+            if(l > 0)
+                cout << l << endl;
             //Line 3 begins with a '+' character and is optionally followed by the same sequence identifier (and any description) again.
             r1.readline(bufa, MAX_BUF); r2.readline(bufb, MAX_BUF);
             //Line 4 encodes the quality values for the sequence in Line 2, and must contain the same number of symbols as letters in the sequence.
