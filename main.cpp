@@ -27,7 +27,6 @@ bool init(int argc, char** argv, my_gzip& f1, my_gzip& f2)
         return false;
     }
 
-
     return true;
 }
 
@@ -100,24 +99,26 @@ int find_length_kmp(char* r1, char* r2)
     //read lengths
     int n = strlen(r1);
     int m = strlen(r2);
-    int b[m + 1];
+    int b[n + 1];
     compute_border_array(r1, b);
     int length = 0;
     int i = 0, j = 0;
 
+    int min_len = n < m ? n : m;
+
     if(m != n)
     {
-        cerr << "Somethin funky's goin down" << endl;
+        //cerr << "Somethin funky's goin down" << endl;
     }
 
     bool found = false;
 
-    while(i < n - 15)
+    while(i < min_len - 15)
     {
         //r1 is pattern
         //i is shift amount in r2 "text"
         //j is current location
-        while(r2[i + j] != 0 && r1[j] == r2[i + j]){
+        while(r2[i + j] != 0 && r1[j] != 0 && r1[j] == r2[i + j] ){
             j++;
         }
         if(r2[i + j] == 0)
@@ -201,6 +202,23 @@ int find_length_naive(char* r1, char* r2)
 
 }
 
+bool check_sequence_identifiers(char* r1, char* r2)
+{
+    bool good = false;
+
+    //check for equality up to first space
+    while(*r1 == *r2 && *r1 && *r2 && *r1 != ' ' && *r2 != ' ')
+    {
+        r1++;
+        r2++;
+    }
+
+    if(*r1 == ' ' && *r2 == ' ')
+        good = true;
+
+    return good;
+}
+
 int main(int argc, char** argv) {
 
     my_gzip r1, r2;
@@ -209,19 +227,25 @@ int main(int argc, char** argv) {
     {
         while(!r1.eof() && !r2.eof())
         {
+            //TODO: these don't *really* have to match?
+            //only the read identifiers have to match, lengths can be different
+            //Line 1 begins with a '@' character and is followed by a *sequence identifier* and an optional description (like a FASTA title line).
             r1.readline(bufa, MAX_BUF); r2.readline(bufb, MAX_BUF);
-            //the above lines should match
+            //the above lines should match up to the first space at least
             if(r1.eof() || r2.eof()) break;
-            if(strcmp(bufa, bufb) != 0)
+            if(!check_sequence_identifiers(bufa, bufb))
             {
                 cerr << "Reads are not paired?" << endl;
                 break;
             }
+            //Line 2 is the raw sequence letters.
             r1.readline(bufa, MAX_BUF); r2.readline(bufb, MAX_BUF);
             inverse(bufb);
             //cout << "R1: " << bufa << endl << "R2: " << bufb << endl;
             cout << find_length_kmp(bufa, bufb) << endl;
+            //Line 3 begins with a '+' character and is optionally followed by the same sequence identifier (and any description) again.
             r1.readline(bufa, MAX_BUF); r2.readline(bufb, MAX_BUF);
+            //Line 4 encodes the quality values for the sequence in Line 2, and must contain the same number of symbols as letters in the sequence.
             r1.readline(bufa, MAX_BUF); r2.readline(bufb, MAX_BUF);
         }
     }
